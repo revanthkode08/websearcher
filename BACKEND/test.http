@@ -1,0 +1,229 @@
+###
+POST http://localhost:5000/app/user/register
+Content-Type: application/json
+
+{
+    "Name": "testuser",
+    "Email": "email@gmail.com",
+    "Password": "password123",
+    "Role":"user"
+}
+
+###1.Register User
+
+POST http://localhost:5000/app/user/register
+Content-Type: application/json
+
+{
+"Name": "testuser",
+"Email": "email@gmail.com",
+"Password": "password123",
+"Role": "user"
+}
+
+
+###2️. Login User
+
+POST http://localhost:5000/app/user/login
+Content-Type: application/json
+
+{
+"Email": "email@gmail.com",
+"Password": "password123"
+}
+
+
+
+###3. Admin Crawl Website
+
+POST http://localhost:5000/app/admin/crawl
+Content-Type: application/json
+
+{
+"Url": "https://example.com"
+}
+
+
+
+###4️. Author Add Page
+
+POST http://localhost:5000/app/author/add-page
+Content-Type: application/json
+
+{
+"Url": "https://nodejs.org",
+"Title": "NodeJS Official Site",
+"Content": "NodeJS is used for backend development with JavaScript",
+"Keywords": ["nodejs", "javascript", "backend"],
+"Links": ["https://expressjs.com"]
+}
+
+
+
+###5️. Search Pages
+GET http://localhost:5000/app/user/search?q=node
+
+###1️. Register User (Valid)
+
+POST http://localhost:5000/app/user/register
+Content-Type: application/json
+
+{
+"Name": "testuser",
+"Email": "email@gmail.com",
+"Password": "password123",
+"Role": "user"
+}
+
+############################################
+
+###2️.Register Another User
+
+POST http://localhost:5000/app/user/register
+Content-Type: application/json
+
+{
+"Name": "authoruser",
+"Email": "author@gmail.com",
+"Password": "password123",
+"Role": "author"
+}
+
+############################################
+
+###3. Register Admin
+
+POST http://localhost:5000/app/user/register
+Content-Type: application/json
+
+{
+"Name": "adminuser",
+"Email": "admin@gmail.com",
+"Password": "password123",
+"Role": "admin"
+}
+
+############################################
+
+##4️.Login User (Valid)
+
+POST http://localhost:5000/app/user/login
+Content-Type: application/json
+
+{
+"Email": "email@gmail.com",
+"Password": "password123"
+}
+
+############################################
+
+###5️. Login Author
+
+POST http://localhost:5000/app/user/login
+Content-Type: application/json
+
+{
+"Email": "author@gmail.com",
+"Password": "password123"
+}
+
+############################################
+
+###6️. Login Admin
+
+POST http://localhost:5000/app/user/login
+Content-Type: application/json
+
+{
+"Email": "admin@gmail.com",
+"Password": "password123"
+}
+
+############################################
+
+###7️.Login With Wrong Password
+
+POST http://localhost:5000/app/user/login
+Content-Type: application/json
+
+{
+"Email": "email@gmail.com",
+"Password": "wrongpassword"
+}
+
+############################################
+
+###8️.Admin Crawl Website
+
+POST http://localhost:5000/app/admin/crawl
+Content-Type: application/json
+
+{
+"Url": "https://example.com"
+}
+
+
+############################################
+
+###9️. Crawl Another Website
+
+POST http://localhost:5000/app/admin/crawl
+Content-Type: application/json
+
+{
+"Url": "https://nodejs.org"
+}
+
+############################################
+
+###10. Author Add Page
+
+POST http://localhost:5000/app/author/add-page
+Content-Type: application/json
+
+{
+"Url": "https://expressjs.com",
+"Title": "ExpressJS Website",
+"Content": "Express is a NodeJS framework used for building APIs",
+"Keywords": ["express","nodejs","api"],
+"Links": ["https://nodejs.org"]
+}
+
+############################################
+
+###1️1. Add Another Page
+
+POST http://localhost:5000/app/author/add-page
+Content-Type: application/json
+
+{
+"Url": "https://react.dev",
+"Title": "React Official",
+"Content": "React is a JavaScript library for building UI",
+"Keywords": ["react","javascript","frontend"],
+"Links": ["https://nodejs.org"]
+}
+
+############################################
+
+###1️2.Search Pages (Node)
+
+GET http://localhost:5000/app/user/search?q=node
+
+############################################
+
+###1️3. Search Pages (React)
+
+GET http://localhost:5000/app/user/search?q=react
+
+############################################
+
+###1️4️. Search Pages (Express)
+
+GET http://localhost:5000/app/user/search?q=express
+
+############################################
+
+###1️5️. Search Pages (No Result)
+
+GET http://localhost:5000/app/user/search?q=python
