@@ -56,7 +56,7 @@ export default function Home(){
 
  const fetchHistory = async () => {
    try {
-     const res = await axios.get(`http://localhost:5000/app/user/history/${User._id}`)
+     const res = await axios.get(`https://websearcher-p0lw.onrender.com/app/user/history/${User._id}`)
      // Get unique recent searches
      const uniqueHistory = [...new Set(res.data.map(h => h.query))].reverse().slice(0, 5)
      setSearchHistory(uniqueHistory)
@@ -82,7 +82,7 @@ export default function Home(){
      return
    }
    try {
-     const res = await axios.get(`http://localhost:5000/app/user/suggest?q=${q}`)
+     const res = await axios.get(`https://websearcher-p0lw.onrender.com/app/user/suggest?q=${q}`)
      setSuggestions(res.data)
    } catch(e) {
      console.error("Suggestions error", e)
@@ -133,13 +133,13 @@ export default function Home(){
    try{
      const startTime = performance.now()
      const Res = await axios.get(
-       `http://localhost:5000/app/user/search?q=${q}&page=${pageToFetch}&limit=10&domain=${DomainFilter}`
+       `https://websearcher-p0lw.onrender.com/app/user/search?q=${q}&page=${pageToFetch}&limit=10&domain=${DomainFilter}`
      )
      const endTime = performance.now()
      
      // Save history
      if(User && pageToFetch === 1) {
-       await axios.post('http://localhost:5000/app/user/history', { userId: User._id, query: q }).catch(e=>console.error(e))
+       await axios.post('https://websearcher-p0lw.onrender.com/app/user/history', { userId: User._id, query: q }).catch(e=>console.error(e))
        fetchHistory() // Refresh history after searching
      }
 

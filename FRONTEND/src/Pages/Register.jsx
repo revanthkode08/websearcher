@@ -22,7 +22,7 @@ export default function Register(){
 
    try{
      const Res = await axios.post(
-       "http://localhost:5000/app/user/register",
+       "https://websearcher-p0lw.onrender.com/app/user/register",
        { Name, Email, Password, Role }
      )
      

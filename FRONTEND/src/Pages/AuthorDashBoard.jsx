@@ -33,7 +33,7 @@ export default function AuthorDashboard(){
 
  const fetchWebsites = async () => {
    try {
-     const res = await axios.get("http://localhost:5000/app/admin/websites")
+     const res = await axios.get("https://websearcher-p0lw.onrender.com/app/admin/websites")
      setWebsites(res.data)
    } catch(e) {
      console.error("Failed to fetch websites", e)
@@ -42,7 +42,7 @@ export default function AuthorDashboard(){
 
  const fetchStats = async () => {
    try {
-     const res = await axios.get("http://localhost:5000/app/admin/stats")
+     const res = await axios.get("https://websearcher-p0lw.onrender.com/app/admin/stats")
      setStats(res.data)
    } catch(e) {
      console.error("Failed to fetch stats", e)
@@ -53,7 +53,7 @@ export default function AuthorDashboard(){
    setLoading(true)
    try{
      await axios.post(
-       "http://localhost:5000/app/author/add-page",
+       "https://websearcher-p0lw.onrender.com/app/author/add-page",
        { Url, Title, Content, Keywords: Keywords.split(",").map(k => k.trim()) }
      )
      setMessage("Website Added Successfully")
@@ -72,7 +72,7 @@ export default function AuthorDashboard(){
    if(!CrawlUrl) return;
    setLoading(true)
    try {
-     const res = await axios.post("http://localhost:5000/app/admin/crawl", { Url: CrawlUrl })
+     const res = await axios.post("https://websearcher-p0lw.onrender.com/app/admin/crawl", { Url: CrawlUrl })
      setMessage(res.data.message || "Crawled successfully")
      fetchStats()
      fetchWebsites()

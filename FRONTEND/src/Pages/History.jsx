@@ -20,7 +20,7 @@ export default function History() {
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/app/user/history/${User._id}`);
+      const res = await axios.get(`https://websearcher-p0lw.onrender.com/app/user/history/${User._id}`);
       // Reverse to show newest first
       setHistory(res.data.reverse());
     } catch (e) {
