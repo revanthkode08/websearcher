@@ -7,6 +7,7 @@ export default function Register(){
  const [Name,setName] = useState("")
  const [Email,setEmail] = useState("")
  const [Password,setPassword] = useState("")
+ const [Role,setRole] = useState("user")
  const [Loading, setLoading] = useState(false)
  const [ErrorMsg, setErrorMsg] = useState("")
  const [SuccessMsg, setSuccessMsg] = useState("")
@@ -22,7 +23,7 @@ export default function Register(){
    try{
      const Res = await axios.post(
        "http://localhost:5000/app/user/register",
-       { Name, Email, Password, Role:"user" }
+       { Name, Email, Password, Role }
      )
      
      setSuccessMsg("Account created successfully! Redirecting to login...")
@@ -66,7 +67,7 @@ export default function Register(){
          )}
          
          {SuccessMsg && (
-           <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-xl mb-6 text-sm flex items-center gap-2 border border-emerald-100 dark:border-emerald-800">
+           <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:emerald-400 p-4 rounded-xl mb-6 text-sm flex items-center gap-2 border border-emerald-100 dark:border-emerald-800">
              <UserPlus className="w-5 h-5 flex-shrink-0" />
              {SuccessMsg}
            </div>
@@ -121,6 +122,29 @@ export default function Register(){
                  onChange={(e)=>setPassword(e.target.value)}
                  required
                />
+             </div>
+           </div>
+
+           <div className="space-y-1.5">
+             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Role</label>
+             <div className="relative group">
+               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                 <UserPlus className="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
+               </div>
+               <select
+                 className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl pl-11 pr-10 py-3.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all shadow-sm appearance-none cursor-pointer"
+                 value={Role}
+                 onChange={(e)=>setRole(e.target.value)}
+                 required
+               >
+                 <option value="user">User</option>
+                 <option value="author">Author</option>
+               </select>
+               <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                 </svg>
+               </div>
              </div>
            </div>
 
