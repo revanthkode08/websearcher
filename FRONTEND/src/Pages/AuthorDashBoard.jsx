@@ -10,7 +10,8 @@ import {
   Cpu,
   RefreshCw,
   ExternalLink,
-  Tag
+  Tag,
+  X
 } from "lucide-react"
 
 export default function AuthorDashboard(){
@@ -23,6 +24,7 @@ export default function AuthorDashboard(){
  const [Websites, setWebsites] = useState([])
  const [Message, setMessage] = useState("")
  const [Loading, setLoading] = useState(false)
+ const [SelectedSite, setSelectedSite] = useState(null)
 
  useEffect(() => {
    fetchStats()
@@ -280,9 +282,9 @@ export default function AuthorDashboard(){
                  </a>
                </div>
                
-               <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50">
+               <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex flex-col justify-between">
                  {site.Keywords && site.Keywords.length > 0 ? (
-                   <div className="flex flex-wrap gap-2">
+                   <div className="flex flex-wrap gap-2 mb-4">
                      {site.Keywords.slice(0, 3).map((kw, i) => (
                        <span key={i} className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium border border-gray-200 dark:border-gray-600">
                          <Tag className="w-3 h-3 opacity-50" />
@@ -296,8 +298,14 @@ export default function AuthorDashboard(){
                      )}
                    </div>
                  ) : (
-                   <span className="text-xs text-gray-400 italic">No metadata tags</span>
+                   <span className="text-xs text-gray-400 italic mb-4 block">No metadata tags</span>
                  )}
+                 <button 
+                   onClick={() => setSelectedSite(site)} 
+                   className="w-full text-center py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 rounded-xl transition-colors border border-blue-100 dark:border-blue-900/50"
+                 >
+                   View More Details
+                 </button>
                </div>
              </div>
            ))}
@@ -311,8 +319,80 @@ export default function AuthorDashboard(){
          </div>
        </GlassPanel>
 
-     </div>
-   </div>
+      </div>
+
+      {/* VIEW DETAILS MODAL */}
+      {SelectedSite && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col">
+            <div className="sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-start z-10">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white pr-4">{SelectedSite.Title || 'Untitled Resource'}</h2>
+              <button onClick={() => setSelectedSite(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                <X className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
+            <div className="p-6 space-y-6">
+              <div>
+                <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">URL</h4>
+                <a href={SelectedSite.Url} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all flex items-center gap-2 font-medium">
+                  {SelectedSite.Url} <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Domain</h4>
+                  <p className="text-gray-900 dark:text-gray-200 flex items-center gap-2">
+                    <img src={`https://www.google.com/s2/favicons?domain=${SelectedSite.Domain}&sz=32`} className="w-4 h-4 rounded" alt=""/>
+                    {SelectedSite.Domain}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Indexed Date</h4>
+                  <p className="text-gray-900 dark:text-gray-200 text-sm">
+                    {SelectedSite.CrawledAt ? new Date(SelectedSite.CrawledAt).toLocaleString() : 'Unknown'}
+                  </p>
+                </div>
+              </div>
+
+              {SelectedSite.Description && (
+                <div>
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Description</h4>
+                  <p className="text-gray-900 dark:text-gray-200 text-sm leading-relaxed bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                    {SelectedSite.Description}
+                  </p>
+                </div>
+              )}
+              
+              <div>
+                <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <Tag className="w-4 h-4" /> Extracted Keywords ({SelectedSite.Keywords?.length || 0})
+                </h4>
+                {SelectedSite.Keywords && SelectedSite.Keywords.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 mt-3 bg-gray-50 dark:bg-gray-800/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                    {SelectedSite.Keywords.map((kw, i) => (
+                      <span key={i} className="inline-flex items-center text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-medium border border-indigo-100 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No keywords extracted.</p>
+                )}
+              </div>
+
+              <div>
+                <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Content Preview</h4>
+                <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700 max-h-48 overflow-y-auto whitespace-pre-wrap font-mono">
+                  {SelectedSite.Content ? SelectedSite.Content.substring(0, 1500) + "..." : "No content available."}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
  )
 }
 

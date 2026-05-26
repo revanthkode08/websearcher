@@ -90,7 +90,15 @@ export default function Header(){
                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.Name}</p>
                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.Email}</p>
                  </div>
+                 <Link onClick={() => setDropdownOpen(false)} to="/" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                   Web Search
+                 </Link>
                  {user?.Role === 'author' && (
+                   <Link onClick={() => setDropdownOpen(false)} to="/author" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                     Author Dashboard
+                   </Link>
+                 )}
+                 {user?.Role === 'admin' && (
                    <Link onClick={() => setDropdownOpen(false)} to="/admin" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
                      Admin Dashboard
                    </Link>

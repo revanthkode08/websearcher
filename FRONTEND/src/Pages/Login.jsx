@@ -2,13 +2,14 @@ import { useState } from "react"
 import axios from "axios"
 import { UseAuthStore } from "../Store/AuthStore"
 import { useNavigate, Link } from "react-router-dom"
-import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react"
+import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Globe, LayoutDashboard } from "lucide-react"
 
 export default function Login(){
  const [Email,setEmail] = useState("")
  const [Password,setPassword] = useState("")
  const [Loading, setLoading] = useState(false)
  const [ErrorMsg, setErrorMsg] = useState("")
+ const [AuthorChoicePending, setAuthorChoicePending] = useState(false)
 
  const login = UseAuthStore(state=>state.Login)
  const navigate = useNavigate()
@@ -28,7 +29,7 @@ export default function Login(){
      const role = Res.data.Data.UserData.Role
      
      if(role === "author"){
-       navigate("/author")
+       setAuthorChoicePending(true)
      } else if(role === "admin"){
        navigate("/admin")
      } else{
@@ -43,7 +44,43 @@ export default function Login(){
  }
 
  return(
-   <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 flex items-center justify-center p-6 font-sans">
+   <>
+     {AuthorChoicePending ? (
+       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 flex items-center justify-center p-6 font-sans">
+         <div className="w-full max-w-3xl">
+           <div className="text-center mb-12">
+             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-green-500 to-teal-500 text-white mb-6 shadow-xl shadow-green-500/30">
+               <ShieldCheck className="w-8 h-8" />
+             </div>
+             <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600 dark:from-green-400 dark:to-teal-400 tracking-tight">
+               Welcome Author
+             </h1>
+             <p className="text-gray-500 dark:text-gray-400 mt-3 font-medium text-lg">
+               Where would you like to go today?
+             </p>
+           </div>
+           
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div onClick={() => navigate("/")} className="bg-white/70 dark:bg-gray-800/70 p-10 rounded-[2rem] shadow-2xl shadow-gray-200/50 dark:shadow-black/40 border border-white/50 dark:border-gray-700/50 cursor-pointer hover:-translate-y-2 hover:shadow-blue-500/20 transition-all duration-300 text-center group backdrop-blur-xl">
+               <div className="mx-auto w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                 <Globe className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+               </div>
+               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Web Search</h2>
+               <p className="text-gray-500 dark:text-gray-400 font-medium">Search the web and browse results just like a regular user.</p>
+             </div>
+             
+             <div onClick={() => navigate("/author")} className="bg-white/70 dark:bg-gray-800/70 p-10 rounded-[2rem] shadow-2xl shadow-gray-200/50 dark:shadow-black/40 border border-white/50 dark:border-gray-700/50 cursor-pointer hover:-translate-y-2 hover:shadow-indigo-500/20 transition-all duration-300 text-center group backdrop-blur-xl">
+               <div className="mx-auto w-20 h-20 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                 <LayoutDashboard className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+               </div>
+               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Author Dashboard</h2>
+               <p className="text-gray-500 dark:text-gray-400 font-medium">Crawl websites, manage index, and view crawler statistics.</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     ) : (
+       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 flex items-center justify-center p-6 font-sans">
      
      <div className="w-full max-w-md">
        
@@ -136,6 +173,8 @@ export default function Login(){
        </div>
      </div>
 
-   </div>
+       </div>
+     )}
+   </>
  )
 }
