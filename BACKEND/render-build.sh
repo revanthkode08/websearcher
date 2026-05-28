@@ -11,6 +11,9 @@ PUPPETEER_CACHE_DIR=/opt/render/.cache/puppeteer
 mkdir -p $PUPPETEER_CACHE_DIR
 
 echo "Installing Chrome for Puppeteer..."
+# Fix permissions just in case
+chmod +x node_modules/.bin/puppeteer || true
+
 # Install Chrome using puppeteer CLI
 npx puppeteer browsers install chrome
 
