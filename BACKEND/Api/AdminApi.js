@@ -6,8 +6,12 @@ import Page from "../Models/PageModel.js"
 const Router = express.Router()
 
 Router.post("/crawl",async(req,res)=>{
- const Result = await CrawlWebsite(req.body.Url)
- res.json(Result)
+ try {
+  const Result = await CrawlWebsite(req.body.Url)
+  res.json(Result)
+ } catch(err) {
+  res.status(500).json({ error: err.message, message: "Puppeteer failed to launch or crawl the website. This is common on hosting platforms like Render if Chrome dependencies are missing." })
+ }
 })
 
 Router.get("/websites", async (req, res) => {
