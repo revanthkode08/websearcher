@@ -356,11 +356,38 @@ export default function Home(){
                        {PageData.Description ? PageData.Description : PageData.Content?.substring(0, 160) + "..."}
                      </p>
                      
+                     {/* AI Semantic Metadata */}
+                     {PageData.WebsitePurpose && (
+                       <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 italic border-l-2 border-blue-400 pl-2">
+                         {PageData.WebsitePurpose}
+                       </p>
+                     )}
+                     
+                     {(PageData.CompanyCategory?.length > 0 || PageData.SemanticSearchTags?.length > 0) && (
+                       <div className="flex flex-wrap gap-2 mt-3">
+                         {PageData.CompanyCategory?.map((cat, idx) => (
+                           <span key={`cat-${idx}`} className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-md border border-indigo-100 dark:border-indigo-800">
+                             {cat}
+                           </span>
+                         ))}
+                         {PageData.SemanticSearchTags?.slice(0, 5).map((tag, idx) => (
+                           <span key={`tag-${idx}`} className="text-[10px] px-2 py-1 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-md border border-gray-100 dark:border-gray-700">
+                             #{tag}
+                           </span>
+                         ))}
+                       </div>
+                     )}
+
                      {/* Metadata Footer */}
-                     <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-50 dark:border-gray-800/50">
+                     <div className="flex items-center flex-wrap gap-4 mt-3 pt-2 border-t border-gray-50 dark:border-gray-800/50">
                        {PageData.Domain && (
                          <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-md">
                            🏷️ {PageData.Domain.split('.')[0]}
+                         </span>
+                       )}
+                       {PageData.RelevanceScores && (
+                         <span className="text-xs px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-md">
+                           Tech: {PageData.RelevanceScores.technical_content_score || 0}% | Jobs: {PageData.RelevanceScores.job_related_score || 0}%
                          </span>
                        )}
                        {PageData.score && (
