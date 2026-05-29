@@ -1,424 +1,428 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { 
-  Globe, 
-  Users, 
-  Activity, 
-  Database, 
-  Search, 
-  PlusCircle, 
-  Cpu,
-  RefreshCw,
-  ExternalLink,
-  Tag,
-  X
+  Globe, Users, Activity, Database, Search, 
+  Plus, Cpu, RefreshCw, ExternalLink, Tag, 
+  X, ChevronRight, Hash, Server, BarChart2
 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { cn } from "../lib/utils"
 
-export default function AuthorDashboard(){
- const [Url, setUrl] = useState("")
- const [Title, setTitle] = useState("")
- const [Content, setContent] = useState("")
- const [Keywords, setKeywords] = useState("")
- const [CrawlUrl, setCrawlUrl] = useState("")
- const [Stats, setStats] = useState(null)
- const [Websites, setWebsites] = useState([])
- const [Message, setMessage] = useState("")
- const [Loading, setLoading] = useState(false)
- const [SelectedSite, setSelectedSite] = useState(null)
+export default function AuthorDashboard() {
+  const [Url, setUrl] = useState("")
+  const [Title, setTitle] = useState("")
+  const [Content, setContent] = useState("")
+  const [Keywords, setKeywords] = useState("")
+  const [CrawlUrl, setCrawlUrl] = useState("")
+  const [Stats, setStats] = useState(null)
+  const [Websites, setWebsites] = useState([])
+  const [Message, setMessage] = useState("")
+  const [Loading, setLoading] = useState(false)
+  const [SelectedSite, setSelectedSite] = useState(null)
 
- useEffect(() => {
-   fetchStats()
-   fetchWebsites()
- }, [])
+  useEffect(() => {
+    fetchStats()
+    fetchWebsites()
+  }, [])
 
- const fetchWebsites = async () => {
-   try {
-     const res = await axios.get("https://websearcher-p0lw.onrender.com/app/admin/websites")
-     setWebsites(res.data)
-   } catch(e) {
-     console.error("Failed to fetch websites", e)
-   }
- }
+  const fetchWebsites = async () => {
+    try {
+      const res = await axios.get("https://websearcher-p0lw.onrender.com/app/admin/websites")
+      setWebsites(res.data)
+    } catch(e) {
+      console.error("Failed to fetch websites", e)
+    }
+  }
 
- const fetchStats = async () => {
-   try {
-     const res = await axios.get("https://websearcher-p0lw.onrender.com/app/admin/stats")
-     setStats(res.data)
-   } catch(e) {
-     console.error("Failed to fetch stats", e)
-   }
- }
+  const fetchStats = async () => {
+    try {
+      const res = await axios.get("https://websearcher-p0lw.onrender.com/app/admin/stats")
+      setStats(res.data)
+    } catch(e) {
+      console.error("Failed to fetch stats", e)
+    }
+  }
 
- const handleAddWebsite = async()=>{
-   setLoading(true)
-   try{
-     await axios.post(
-       "https://websearcher-p0lw.onrender.com/app/author/add-page",
-       { Url, Title, Content, Keywords: Keywords.split(",").map(k => k.trim()) }
-     )
-     setMessage("Website Added Successfully")
-     fetchStats()
-     fetchWebsites()
-     setUrl(""); setTitle(""); setContent(""); setKeywords("")
-   } catch(err){
-     setMessage("Error adding website")
-   } finally {
-     setLoading(false)
-     setTimeout(() => setMessage(""), 3000)
-   }
- }
+  const showToast = (msg) => {
+    setMessage(msg)
+    setTimeout(() => setMessage(""), 3000)
+  }
 
- const handleCrawl = async() => {
-   if(!CrawlUrl) return;
-   setLoading(true)
-   try {
-     const res = await axios.post("https://websearcher-p0lw.onrender.com/app/admin/crawl", { Url: CrawlUrl })
-     setMessage(res.data.message || "Crawled successfully")
-     fetchStats()
-     fetchWebsites()
-     setCrawlUrl("")
-   } catch(e) {
-     setMessage("Crawl failed")
-   } finally {
-     setLoading(false)
-     setTimeout(() => setMessage(""), 3000)
-   }
- }
+  const handleAddWebsite = async() => {
+    setLoading(true)
+    try {
+      await axios.post(
+        "https://websearcher-p0lw.onrender.com/app/author/add-page",
+        { Url, Title, Content, Keywords: Keywords.split(",").map(k => k.trim()) }
+      )
+      showToast("Website Added Successfully")
+      fetchStats()
+      fetchWebsites()
+      setUrl(""); setTitle(""); setContent(""); setKeywords("")
+    } catch(err) {
+      showToast("Error adding website")
+    } finally {
+      setLoading(false)
+    }
+  }
 
- return(
-   <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 p-6 md:p-10 transition-colors duration-500 font-sans">
-     <div className="max-w-7xl mx-auto space-y-10">
-       
-       {/* HEADER */}
-       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-         <div>
-           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 tracking-tight">
-             Crawler Command Center
-           </h1>
-           <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium">Manage and monitor your web indexing infrastructure.</p>
-         </div>
-         <button 
-           onClick={() => { fetchStats(); fetchWebsites(); }}
-           className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-sm backdrop-blur-md border border-gray-200 dark:border-gray-700 transition-all duration-300 group cursor-pointer"
-         >
-           <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-           Refresh Data
-         </button>
-       </header>
+  const handleCrawl = async() => {
+    if (!CrawlUrl) return
+    setLoading(true)
+    try {
+      const res = await axios.post("https://websearcher-p0lw.onrender.com/app/admin/crawl", { Url: CrawlUrl })
+      showToast(res.data.message || "Crawled successfully")
+      fetchStats()
+      fetchWebsites()
+      setCrawlUrl("")
+    } catch(e) {
+      showToast("Crawl failed")
+    } finally {
+      setLoading(false)
+    }
+  }
 
-       {/* NOTIFICATION TOAST */}
-       {Message && (
-         <div className="fixed top-6 right-6 z-50 animate-bounce">
-           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl shadow-xl shadow-blue-500/20 border border-white/20 backdrop-blur-lg font-medium flex items-center gap-3">
-             <Activity className="w-5 h-5" />
-             {Message}
-           </div>
-         </div>
-       )}
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 p-4 md:p-8">
+      
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {Message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-20 right-8 z-50 flex items-center gap-2 bg-card border border-border shadow-2xl px-4 py-3 rounded-lg"
+          >
+            <Activity className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">{Message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-       {/* GLOSSY STATS ROW */}
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-         <StatCard icon={<Database className="w-6 h-6 text-blue-500" />} label="Indexed Pages" value={Stats?.totalPages || 0} gradient="from-blue-500/10 to-transparent" />
-         <StatCard icon={<Users className="w-6 h-6 text-purple-500" />} label="Total Users" value={Stats?.totalUsers || 0} gradient="from-purple-500/10 to-transparent" />
-         <StatCard icon={<Activity className="w-6 h-6 text-emerald-500" />} label="Crawl Status" value={Stats?.crawlStatus || "Offline"} gradient="from-emerald-500/10 to-transparent" valueColor="text-emerald-600 dark:text-emerald-400" />
-         <StatCard icon={<Globe className="w-6 h-6 text-orange-500" />} label="Active Domains" value={Stats?.activeDomains?.length || 0} gradient="from-orange-500/10 to-transparent" />
-       </div>
+      <div className="max-w-[1400px] mx-auto space-y-8">
+        
+        {/* Header */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end pb-6 border-b border-border/50">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Infrastructure Overview</h1>
+            <p className="text-sm text-muted-foreground mt-1">Monitor distributed crawler nodes and index metrics.</p>
+          </div>
+          <button 
+            onClick={() => { fetchStats(); fetchWebsites(); }}
+            className="mt-4 md:mt-0 flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-card text-xs font-medium hover:bg-muted transition-colors"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Sync Data
+          </button>
+        </header>
 
-       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         
-         {/* LEFT COL: CRAWLER & ADD SITE */}
-         <div className="lg:col-span-2 space-y-8">
-           
-           {/* CRAWL A WEBSITE */}
-           <GlassPanel>
-             <div className="flex items-center gap-3 mb-6">
-               <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"><Cpu className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
-               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Run Crawler Task</h2>
-             </div>
-             <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">Deploy the spider to index a new root URL and extract metadata, keywords, and content.</p>
-             <div className="flex flex-col sm:flex-row gap-4">
-               <input
-                 className="flex-grow bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-3 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-inner"
-                 placeholder="https://example.com"
-                 value={CrawlUrl}
-                 onChange={(e)=>setCrawlUrl(e.target.value)}
-               />
-               <button
-                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[160px] cursor-pointer"
-                 onClick={handleCrawl}
-                 disabled={Loading || !CrawlUrl}
-               >
-                 {Loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Activity className="w-5 h-5" />}
-                 {Loading ? "Indexing..." : "Initialize"}
-               </button>
-             </div>
-           </GlassPanel>
+        {/* Top KPI Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MetricCard title="Total Indexed Pages" value={Stats?.totalPages || 0} icon={<Database className="h-4 w-4 text-blue-500" />} />
+          <MetricCard title="Registered Users" value={Stats?.totalUsers || 0} icon={<Users className="h-4 w-4 text-emerald-500" />} />
+          <MetricCard title="Active Root Domains" value={Stats?.activeDomains?.length || 0} icon={<Globe className="h-4 w-4 text-purple-500" />} />
+          <MetricCard title="Crawler Status" value={Stats?.crawlStatus || "Offline"} icon={<Server className="h-4 w-4 text-orange-500" />} highlight />
+        </div>
 
-           {/* MANUAL ADD */}
-           <GlassPanel>
-             <div className="flex items-center gap-3 mb-6">
-               <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg"><PlusCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" /></div>
-               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Manual Injection</h2>
-             </div>
-             <div className="space-y-5">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                 <input
-                   className="w-full bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-                   placeholder="Website URL"
-                   value={Url}
-                   onChange={(e)=>setUrl(e.target.value)}
-                 />
-                 <input
-                   className="w-full bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-                   placeholder="Page Title"
-                   value={Title}
-                   onChange={(e)=>setTitle(e.target.value)}
-                 />
-               </div>
-               <textarea
-                 className="w-full bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all h-32 resize-none"
-                 placeholder="Extracted Content"
-                 value={Content}
-                 onChange={(e)=>setContent(e.target.value)}
-               />
-               <input
-                 className="w-full bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-                 placeholder="Keywords (comma separated)"
-                 value={Keywords}
-                 onChange={(e)=>setKeywords(e.target.value)}
-               />
-               <button
-                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
-                 onClick={handleAddWebsite}
-                 disabled={Loading || !Url}
-               >
-                 <PlusCircle className="w-5 h-5" />
-                 {Loading ? "Saving..." : "Inject to Database"}
-               </button>
-             </div>
-           </GlassPanel>
-
-         </div>
-
-         {/* RIGHT COL: ANALYTICS */}
-         <div className="space-y-8 flex flex-col">
-           
-           <GlassPanel className="flex-1">
-             <div className="flex items-center gap-2 mb-6">
-               <Search className="w-5 h-5 text-gray-400" />
-               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Trending Queries</h3>
-             </div>
-             {Stats?.mostSearched?.length > 0 ? (
-               <ul className="space-y-4">
-                 {Stats.mostSearched.map((s, i) => (
-                   <li key={i} className="flex justify-between items-center group">
-                     <span className="text-gray-700 dark:text-gray-300 font-medium group-hover:text-blue-500 transition-colors flex items-center gap-2">
-                       <span className="text-xs text-gray-400 font-mono">{i+1}.</span>
-                       {s._id}
-                     </span>
-                     <span className="bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-xs font-bold border border-gray-200 dark:border-gray-600">
-                       {s.count}
-                     </span>
-                   </li>
-                 ))}
-               </ul>
-             ) : (
-               <div className="flex flex-col items-center justify-center h-32 text-gray-400">
-                 <Activity className="w-8 h-8 mb-2 opacity-50" />
-                 <p className="text-sm">No queries yet.</p>
-               </div>
-             )}
-           </GlassPanel>
-
-           <GlassPanel className="flex-1">
-             <div className="flex items-center gap-2 mb-6">
-               <Globe className="w-5 h-5 text-gray-400" />
-               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Network Topology</h3>
-             </div>
-             {Stats?.activeDomains?.length > 0 ? (
-               <ul className="space-y-4">
-                 {Stats.activeDomains.map((d, i) => (
-                   <li key={i} className="flex justify-between items-center">
-                     <span className="text-gray-700 dark:text-gray-300 flex items-center gap-3 font-medium">
-                       <img src={`https://www.google.com/s2/favicons?domain=${d._id}&sz=32`} className="w-5 h-5 rounded shadow-sm bg-white" alt=""/>
-                       <span className="truncate max-w-[150px]">{d._id}</span>
-                     </span>
-                     <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md">
-                       {d.count} pgs
-                     </span>
-                   </li>
-                 ))}
-               </ul>
-             ) : (
-               <div className="flex flex-col items-center justify-center h-32 text-gray-400">
-                 <Globe className="w-8 h-8 mb-2 opacity-50" />
-                 <p className="text-sm">No domains mapped.</p>
-               </div>
-             )}
-           </GlassPanel>
-
-         </div>
-
-       </div>
-
-       {/* INDEXED DATA GRID */}
-       <GlassPanel>
-         <div className="flex items-center gap-3 mb-8 border-b border-gray-100 dark:border-gray-700 pb-4">
-           <Database className="w-6 h-6 text-indigo-500" />
-           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Indexed Web Graph</h2>
-           <span className="ml-auto bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-sm font-bold">
-             {Websites.length} Records
-           </span>
-         </div>
-         
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-           {Websites.map(site => (
-             <div key={site._id} className="group bg-white/40 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 p-5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col h-full hover:-translate-y-1">
-               <div className="mb-4">
-                 <h3 className="font-bold text-gray-900 dark:text-white text-lg line-clamp-2 leading-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={site.Title}>{site.Title || "Untitled Resource"}</h3>
-                 <a href={site.Url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-full group/link" title={site.Url}>
-                   <span className="truncate">{site.Url}</span>
-                   <ExternalLink className="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity flex-shrink-0" />
-                 </a>
-               </div>
-               
-               <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex flex-col justify-between">
-                 {site.Keywords && site.Keywords.length > 0 ? (
-                   <div className="flex flex-wrap gap-2 mb-4">
-                     {site.Keywords.slice(0, 3).map((kw, i) => (
-                       <span key={i} className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium border border-gray-200 dark:border-gray-600">
-                         <Tag className="w-3 h-3 opacity-50" />
-                         {kw}
-                       </span>
-                     ))}
-                     {site.Keywords.length > 3 && (
-                       <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2.5 py-1 rounded-md font-medium border border-gray-200 dark:border-gray-600">
-                         +{site.Keywords.length - 3}
-                       </span>
-                     )}
-                   </div>
-                 ) : (
-                   <span className="text-xs text-gray-400 italic mb-4 block">No metadata tags</span>
-                 )}
-                 <button 
-                   onClick={() => setSelectedSite(site)} 
-                   className="w-full text-center py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 rounded-xl transition-colors border border-blue-100 dark:border-blue-900/50"
-                 >
-                   View More Details
-                 </button>
-               </div>
-             </div>
-           ))}
-           {Websites.length === 0 && (
-             <div className="col-span-full flex flex-col items-center justify-center p-12 text-gray-400 bg-gray-50/50 dark:bg-gray-800/20 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-               <Database className="w-12 h-12 mb-4 opacity-20" />
-               <p className="text-lg font-medium text-gray-500 dark:text-gray-400">Database Empty</p>
-               <p className="text-sm mt-1 text-center max-w-md">Run the crawler or inject a website manually to populate the indexed web graph.</p>
-             </div>
-           )}
-         </div>
-       </GlassPanel>
-
-      </div>
-
-      {/* VIEW DETAILS MODAL */}
-      {SelectedSite && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col">
-            <div className="sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-start z-10">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white pr-4">{SelectedSite.Title || 'Untitled Resource'}</h2>
-              <button onClick={() => setSelectedSite(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
-                <X className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-              </button>
-            </div>
-            <div className="p-6 space-y-6">
-              <div>
-                <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">URL</h4>
-                <a href={SelectedSite.Url} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all flex items-center gap-2 font-medium">
-                  {SelectedSite.Url} <ExternalLink className="w-4 h-4" />
-                </a>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Main Console Left - 8 cols */}
+          <div className="lg:col-span-8 space-y-8">
+            
+            {/* Run Crawler Task */}
+            <div className="bg-card border border-border rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Cpu className="h-5 w-5 text-primary" />
+                <h2 className="font-semibold text-foreground tracking-tight">Deploy Crawler Job</h2>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Domain</h4>
-                  <p className="text-gray-900 dark:text-gray-200 flex items-center gap-2">
-                    <img src={`https://www.google.com/s2/favicons?domain=${SelectedSite.Domain}&sz=32`} className="w-4 h-4 rounded" alt=""/>
-                    {SelectedSite.Domain}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Indexed Date</h4>
-                  <p className="text-gray-900 dark:text-gray-200 text-sm">
-                    {SelectedSite.CrawledAt ? new Date(SelectedSite.CrawledAt).toLocaleString() : 'Unknown'}
-                  </p>
-                </div>
-              </div>
-
-              {SelectedSite.Description && (
-                <div>
-                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Description</h4>
-                  <p className="text-gray-900 dark:text-gray-200 text-sm leading-relaxed bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                    {SelectedSite.Description}
-                  </p>
-                </div>
-              )}
-              
-              <div>
-                <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <Tag className="w-4 h-4" /> Extracted Keywords ({SelectedSite.Keywords?.length || 0})
-                </h4>
-                {SelectedSite.Keywords && SelectedSite.Keywords.length > 0 ? (
-                  <div className="flex flex-wrap gap-2 mt-3 bg-gray-50 dark:bg-gray-800/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-                    {SelectedSite.Keywords.map((kw, i) => (
-                      <span key={i} className="inline-flex items-center text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-medium border border-indigo-100 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">
-                        {kw}
-                      </span>
-                    ))}
+              <p className="text-xs text-muted-foreground mb-5">
+                Initialize the distributed spider to crawl, extract semantics via Gemini, and build text indexes.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-grow">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-muted-foreground text-sm font-mono">https://</span>
                   </div>
+                  <input
+                    className="w-full bg-background border border-border rounded-md pl-16 pr-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-mono"
+                    placeholder="example.com/blog"
+                    value={CrawlUrl.replace(/^https?:\/\//, '')}
+                    onChange={(e) => setCrawlUrl(`https://${e.target.value}`)}
+                  />
+                </div>
+                <button
+                  onClick={handleCrawl}
+                  disabled={Loading || !CrawlUrl}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  {Loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+                  {Loading ? "Executing..." : "Run Job"}
+                </button>
+              </div>
+            </div>
+
+            {/* Manual Injection */}
+            <div className="bg-card border border-border rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Plus className="h-5 w-5 text-emerald-500" />
+                <h2 className="font-semibold text-foreground tracking-tight">Manual Database Injection</h2>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <InputBox label="Resource URL" placeholder="https://..." value={Url} onChange={setUrl} />
+                  <InputBox label="Document Title" placeholder="Page Title" value={Title} onChange={setTitle} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">Raw Content / Semantic Block</label>
+                  <textarea
+                    className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary transition-colors h-24 resize-none font-mono"
+                    placeholder="Extract data..."
+                    value={Content}
+                    onChange={(e)=>setContent(e.target.value)}
+                  />
+                </div>
+                <InputBox label="Keywords (Comma separated)" placeholder="react, tailwind, UI" value={Keywords} onChange={setKeywords} />
+                
+                <div className="flex justify-end pt-2">
+                  <button
+                    onClick={handleAddWebsite}
+                    disabled={Loading || !Url}
+                    className="bg-muted hover:bg-muted/80 text-foreground border border-border px-5 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                    Insert Record
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Side Analytics Right - 4 cols */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <BarChart2 className="h-4 w-4" /> Search Telemetry
+              </h3>
+              <div className="space-y-3">
+                {Stats?.mostSearched?.length > 0 ? (
+                  Stats.mostSearched.map((s, i) => (
+                    <div key={i} className="flex justify-between items-center group">
+                      <span className="text-sm font-medium text-foreground truncate max-w-[180px]">
+                        {s._id}
+                      </span>
+                      <span className="text-[10px] font-mono bg-muted text-muted-foreground px-2 py-0.5 rounded border border-border">
+                        {s.count} hits
+                      </span>
+                    </div>
+                  ))
                 ) : (
-                  <p className="text-sm text-gray-500 italic">No keywords extracted.</p>
+                  <p className="text-xs text-muted-foreground">No telemetry available.</p>
                 )}
               </div>
+            </div>
 
-              <div>
-                <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Content Preview</h4>
-                <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700 max-h-48 overflow-y-auto whitespace-pre-wrap font-mono">
-                  {SelectedSite.Content ? SelectedSite.Content.substring(0, 1500) + "..." : "No content available."}
-                </div>
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <Globe className="h-4 w-4" /> Node Distribution
+              </h3>
+              <div className="space-y-3">
+                {Stats?.activeDomains?.length > 0 ? (
+                  Stats.activeDomains.map((d, i) => (
+                    <div key={i} className="flex justify-between items-center">
+                      <span className="text-sm flex items-center gap-2 text-foreground truncate">
+                        <img src={`https://www.google.com/s2/favicons?domain=${d._id}&sz=32`} className="w-3.5 h-3.5 rounded-sm" alt=""/>
+                        <span className="truncate max-w-[150px]">{d._id}</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-primary">
+                        {d.count} nodes
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-muted-foreground">No topology data.</p>
+                )}
               </div>
             </div>
+
           </div>
         </div>
-      )}
 
-    </div>
- )
-}
+        {/* Data Grid */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden mt-8">
+          <div className="flex items-center justify-between p-5 border-b border-border/50">
+            <div className="flex items-center gap-2">
+              <Database className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold text-foreground">Indexed Web Graph</h3>
+            </div>
+            <span className="text-xs font-mono text-muted-foreground">{Websites.length} Records</span>
+          </div>
 
-// Reusable Components
-
-function StatCard({ icon, label, value, gradient, valueColor = "text-gray-900 dark:text-white" }) {
-  return (
-    <div className={`relative overflow-hidden bg-white/70 dark:bg-gray-800/70 p-6 rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group`}>
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-50 group-hover:opacity-100 transition-opacity`} />
-      <div className="relative z-10 flex flex-col gap-3">
-        <div className="p-3 bg-white dark:bg-gray-900 rounded-xl shadow-sm w-fit group-hover:scale-110 transition-transform duration-300">
-          {icon}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead>
+                <tr className="bg-muted/50 border-b border-border/50">
+                  <th className="px-5 py-3 font-medium text-muted-foreground">Resource</th>
+                  <th className="px-5 py-3 font-medium text-muted-foreground hidden md:table-cell">Metadata</th>
+                  <th className="px-5 py-3 font-medium text-muted-foreground hidden lg:table-cell">Indexed At</th>
+                  <th className="px-5 py-3 font-medium text-muted-foreground text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {Websites.map(site => (
+                  <tr key={site._id} className="hover:bg-muted/30 transition-colors group">
+                    <td className="px-5 py-4 w-1/2">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-foreground truncate max-w-sm">{site.Title || "Untitled"}</span>
+                        <a href={site.Url} target="_blank" rel="noreferrer" className="text-[11px] text-blue-500 hover:underline flex items-center gap-1 mt-1 truncate max-w-sm">
+                          {site.Url}
+                        </a>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 hidden md:table-cell">
+                      <div className="flex items-center gap-1.5 flex-wrap max-w-[200px]">
+                        {site.SemanticSearchTags?.slice(0, 2).map((tag, i) => (
+                          <span key={i} className="text-[10px] bg-muted border border-border px-1.5 py-0.5 rounded text-muted-foreground">
+                            {tag}
+                          </span>
+                        )) || (
+                          <span className="text-xs text-muted-foreground italic">No AI tags</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 hidden lg:table-cell text-[12px] text-muted-foreground font-mono">
+                      {site.CrawledAt ? new Date(site.CrawledAt).toISOString().split('T')[0] : 'N/A'}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <button 
+                        onClick={() => setSelectedSite(site)}
+                        className="text-xs font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center"
+                      >
+                        Inspect <ChevronRight className="h-3 w-3 ml-1" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {Websites.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="px-5 py-10 text-center text-muted-foreground text-sm">
+                      No records found in the database.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <h3 className="text-gray-500 dark:text-gray-400 text-sm font-semibold tracking-wider uppercase mb-1">{label}</h3>
-          <p className={`text-4xl font-extrabold tracking-tight ${valueColor}`}>{value}</p>
-        </div>
+
       </div>
+
+      {/* INSPECT MODAL */}
+      <AnimatePresence>
+        {SelectedSite && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setSelectedSite(null)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30">
+                <div className="flex items-center gap-2 truncate pr-4">
+                  <Hash className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold text-foreground truncate">{SelectedSite.Title}</h3>
+                </div>
+                <button onClick={() => setSelectedSite(null)} className="p-1 rounded-md hover:bg-muted text-muted-foreground transition-colors">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-6">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Source URL</p>
+                  <a href={SelectedSite.Url} target="_blank" rel="noreferrer" className="text-sm font-mono text-blue-500 hover:underline flex items-center gap-2">
+                    {SelectedSite.Url} <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Primary Domain</p>
+                    <p className="text-sm text-foreground">{SelectedSite.Domain}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Ingestion Date</p>
+                    <p className="text-sm font-mono text-foreground">{SelectedSite.CrawledAt ? new Date(SelectedSite.CrawledAt).toLocaleString() : 'N/A'}</p>
+                  </div>
+                </div>
+
+                {SelectedSite.WebsitePurpose && (
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">AI Deduced Purpose</p>
+                    <div className="p-3 bg-muted/50 rounded-lg border border-border text-sm text-foreground/90 leading-relaxed">
+                      {SelectedSite.WebsitePurpose}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Extracted Vectors / Tags</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {SelectedSite.SemanticSearchTags?.map((kw, i) => (
+                      <span key={i} className="px-2 py-1 text-[11px] bg-primary/10 text-primary border border-primary/20 rounded-md">
+                        {kw}
+                      </span>
+                    )) || <span className="text-xs text-muted-foreground">No tags generated.</span>}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Raw Text Buffer (Preview)</p>
+                  <div className="p-4 bg-background border border-border rounded-lg text-[12px] font-mono text-muted-foreground h-40 overflow-y-auto">
+                    {SelectedSite.Content || "No raw text available."}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   )
 }
 
-function GlassPanel({ children, className = "" }) {
+function MetricCard({ title, value, icon, highlight }) {
   return (
-    <div className={`bg-white/60 dark:bg-gray-800/60 p-8 rounded-3xl shadow-xl shadow-gray-200/20 dark:shadow-black/20 border border-white/40 dark:border-gray-700/40 backdrop-blur-2xl ${className}`}>
-      {children}
+    <div className={cn(
+      "bg-card border rounded-xl p-5 flex flex-col gap-3 transition-colors",
+      highlight ? "border-primary/50 shadow-[0_0_15px_-3px_rgba(124,58,237,0.1)]" : "border-border"
+    )}>
+      <div className="flex justify-between items-start">
+        <h3 className="text-xs font-medium text-muted-foreground">{title}</h3>
+        <div className="p-1.5 bg-muted rounded-md">{icon}</div>
+      </div>
+      <p className="text-2xl font-bold tracking-tight text-foreground">{value}</p>
+    </div>
+  )
+}
+
+function InputBox({ label, value, onChange, placeholder }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <input
+        className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   )
 }
