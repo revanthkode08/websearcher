@@ -360,6 +360,13 @@ export default function AuthorDashboard() {
                   </div>
                 </div>
 
+                {SelectedSite.Description && (
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Meta Description</p>
+                    <p className="text-sm text-foreground/90 leading-relaxed">{SelectedSite.Description}</p>
+                  </div>
+                )}
+
                 {SelectedSite.WebsitePurpose && (
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">AI Deduced Purpose</p>
@@ -370,13 +377,17 @@ export default function AuthorDashboard() {
                 )}
 
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Extracted Vectors / Tags</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Extracted Vectors / Keywords</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {SelectedSite.SemanticSearchTags?.map((kw, i) => (
+                    {/* Combine AI Tags and standard Keywords, filtering duplicates */}
+                    {Array.from(new Set([...(SelectedSite.SemanticSearchTags || []), ...(SelectedSite.Keywords || [])])).map((kw, i) => (
                       <span key={i} className="px-2 py-1 text-[11px] bg-primary/10 text-primary border border-primary/20 rounded-md">
                         {kw}
                       </span>
-                    )) || <span className="text-xs text-muted-foreground">No tags generated.</span>}
+                    ))}
+                    {!(SelectedSite.SemanticSearchTags?.length > 0) && !(SelectedSite.Keywords?.length > 0) && (
+                      <span className="text-xs text-muted-foreground">No tags or keywords generated.</span>
+                    )}
                   </div>
                 </div>
 
