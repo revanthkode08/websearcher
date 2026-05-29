@@ -76,7 +76,8 @@ export default function AuthorDashboard() {
       fetchWebsites()
       setCrawlUrl("")
     } catch(e) {
-      showToast("Crawl failed")
+      const err = e.response?.data?.error || e.response?.data?.message || "Crawl failed"
+      showToast(err)
     } finally {
       setLoading(false)
     }
@@ -141,14 +142,11 @@ export default function AuthorDashboard() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-grow">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-muted-foreground text-sm font-mono">https://</span>
-                  </div>
                   <input
-                    className="w-full bg-background border border-border rounded-md pl-16 pr-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-mono"
-                    placeholder="example.com/blog"
-                    value={CrawlUrl.replace(/^https?:\/\//, '')}
-                    onChange={(e) => setCrawlUrl(`https://${e.target.value}`)}
+                    className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-mono"
+                    placeholder="https://example.com"
+                    value={CrawlUrl}
+                    onChange={(e) => setCrawlUrl(e.target.value)}
                   />
                 </div>
                 <button
